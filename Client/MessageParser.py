@@ -1,3 +1,5 @@
+import json
+
 class MessageParser():
     def __init__(self):
 
@@ -9,7 +11,7 @@ class MessageParser():
         }
 
     def parse(self, payload):
-        payload = # decode the JSON object
+        payload = json.loads(payload)
 
         if payload['response'] in self.possible_responses:
             return self.possible_responses[payload['response']](payload)

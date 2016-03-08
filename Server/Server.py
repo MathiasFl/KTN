@@ -112,6 +112,8 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         return listofnames
 
     def login(self, username):
+        validRegex = '\W'
+        re.compiler
         if username not in usersonline:
             login = {
                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
