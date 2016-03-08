@@ -23,7 +23,6 @@ class Client:
         self.server_port = server_port
         
         messageReceiver = MessageReceiver(self,self.connection)
-        messageReceiver.run()
         
         self.run()
 
