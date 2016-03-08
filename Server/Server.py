@@ -18,10 +18,10 @@ Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 
-helpMenu = "Following commands are available \n" \
-           "login <username>\t-\tlog in with the given username" \
-           "msg <message>\t-\tsend message\nnames\t-\tlist users in chat" \
-           "help\t-\tview help text\n"
+helpMenu = "\n\tFollowing commands are available \n" \
+           "\tlogin <username>\t-\tlog in with the given username\n" \
+           "\tmsg <message>\t-\tsend message\n\tnames\t-\tlist users in chat" \
+           "\n\thelp\t-\tview help text\n"
 
 
 class ClientHandler(SocketServer.BaseRequestHandler):
@@ -47,6 +47,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             if recv_data:
                 json_data = json.loads(recv_data)
                 logged_inn = self in clients
+                print json_data
                 if json_data.get('request') == 'login':
                     if logged_inn:
                         reply = {
@@ -57,14 +58,14 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                         }
                         self.send(reply)
                     else:
-                        client_name = self.login(json_data.get('message'))
+                        client_name = self.login(json_data.get('content'))
                 elif json_data.get('request') == 'msg':
                     if logged_inn:
                         reply = {
                             'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             'sender': client_name,
                             'response': 'message',
-                            'message': json_data.get('message')
+                            'message': json_data.get('content')
                         }
                         history.append(reply)
                         self.broadcast(reply)
@@ -114,13 +115,13 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 
     def login(self, username):
         invaldregex = re.compile('\W')
-        if invaldregex.match(username):
-            if username not in usersonline:
+        if not invaldregex.match(str(username)):
+            if username not in usersonline and len(username) >= 2:
                 login = {
                     'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     'sender': 'Server',
                     'response': 'info',
-                    'info': username + 'just logged in, welcome him!'
+                    'info': username + ' just logged in, welcome him!'
                 }
                 self.broadcast(login)  # Send Login message to all users
                 clients.append(self)
@@ -129,7 +130,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                     'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     'sender': 'Server',
                     'response': 'info',
-                    'info': 'You just logged inn with' + username
+                    'info': 'You just logged inn with ' + username
                 }
                 self.send_history()
             else:
@@ -146,12 +147,12 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 'sender': 'Server',
                 'response': 'error',
-                'error': 'Invalid username',
-                'username': username
+                'error': 'Invalid username ' + username
             }
             self.send(reply)
 
-    def send(self, json_data):
+    def send(self, response):
+        json_data = json.dumps(response)
         self.connection.sendall(json_data)
 
     @staticmethod
@@ -164,7 +165,8 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             reply = {
                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 'sender': 'Server',
-                'response': 'logout'
+                'response': 'info',
+                'info': 'You are now logged out, come back again soon'
             }
             clients.remove(self)
             usersonline.remove(username)
@@ -181,8 +183,13 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         # caping history
         while len(history) > HISTORY_CAP:
             history.pop(0)
-        for reply in history:
-            self.send(reply)
+        reply = {
+            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'sender': 'Server',
+            'response': 'history',
+            'history': history
+        }
+        self.send(reply)
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):

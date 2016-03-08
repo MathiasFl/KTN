@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import socket
 import json
+import thread
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
 
@@ -27,14 +28,15 @@ class Client:
     def run(self):
         # Initiate the connection to the server
         self.connection.connect((self.host, self.server_port))
-        MessageReceiver(self, self.connection)
+        thread.start_new(MessageReceiver, (self, self.connection))
 
     def disconnect(self):
         self.connection.close()
         pass
 
     def receive_message(self, message):
-        print MessageParser.parse(message)
+        mp = MessageParser()
+        print mp.parse(message)
         pass
 
     def send_payload(self, data):
@@ -42,7 +44,7 @@ class Client:
         pass
 
     def getUserInput(self):
-        userInput = raw_input()
+        userInput = str(raw_input('>>>'))
         if userInput.lower() == "help" or userInput.lower() == "names" or userInput.lower() == "logout":
             self.json_Encoder(userInput.lower(), "None")
         elif userInput[:5].lower() == "login":
@@ -53,7 +55,7 @@ class Client:
             print "No valid input try again:\n"
 
     def json_Encoder(self, request, content):
-        self.send_payload(json.dump({'request': request, 'content': content}))
+        self.send_payload(json.dumps({'request': request, 'content': content}))
         # More methods may be needed!
 
 
@@ -65,3 +67,5 @@ if __name__ == '__main__':
     No alterations are necessary
     """
     client = Client('localhost', 9998)
+    while True:
+        client.getUserInput()
