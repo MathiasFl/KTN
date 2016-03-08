@@ -71,7 +71,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                     else:
                         reply = {
                             'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            'sender': 'server',
+                            'sender': 'Server',
                             'response': 'error',
                             'error': 'You must be logged inn to send messages'
                         }
@@ -82,13 +82,13 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                             'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             'sender': 'server',
                             'response': 'info',
-                            'message': self.get_names()
+                            'info': self.get_names()
                         }
                         self.send(reply)
                     else:
                         reply = {
                             'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            'sender': 'server',
+                            'sender': 'Server',
                             'response': 'error',
                             'error': 'You must be logged inn to view online users'
                         }
@@ -99,9 +99,9 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 elif json_data.get('request') == 'help':
                     reply = {
                         'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        'sender': 'server',
+                        'sender': 'Server',
                         'response': 'info',
-                        'message': helpMenu
+                        'info': helpMenu
                     }
                     self.send(reply)
 
@@ -118,34 +118,33 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             if username not in usersonline:
                 login = {
                     'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'sender': 'server',
+                    'sender': 'Server',
                     'response': 'info',
-                    'message': username + 'just logged in, welcome him!'
+                    'info': username + 'just logged in, welcome him!'
                 }
                 self.broadcast(login)  # Send Login message to all users
                 clients.append(self)
                 usersonline.append(username)
                 reply = {
                     'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'sender': 'server',
+                    'sender': 'Server',
                     'response': 'info',
-                    'username': username
+                    'info': 'You just logged inn with' + username
                 }
                 self.send_history()
             else:
                 reply = {
                     'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'sender': 'server',
+                    'sender': 'Server',
                     'response': 'error',
-                    'error': 'Name already taken!',
-                    'username': username
+                    'error': username + ' is already taken!',
                 }
             self.send(reply)
             return username
         else:
             reply = {
                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'sender': 'server',
+                'sender': 'Server',
                 'response': 'error',
                 'error': 'Invalid username',
                 'username': username
@@ -164,7 +163,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         if username in usersonline:
             reply = {
                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'sender': 'server',
+                'sender': 'Server',
                 'response': 'logout'
             }
             clients.remove(self)
@@ -172,7 +171,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         else:
             reply = {
                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'sender': 'server',
+                'sender': 'Server',
                 'response': 'error',
                 'error': 'Not logged inn'
             }

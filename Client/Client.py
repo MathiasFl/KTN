@@ -22,14 +22,12 @@ class Client:
         self.host = host
         self.server_port = server_port
         
-        messageReceiver = MessageReceiver(self,self.connection)
-        
         self.run()
 
     def run(self):
         # Initiate the connection to the server
         self.connection.connect((self.host, self.server_port))
-        MessageReceiver(self.host, self.server_port)
+        MessageReceiver(self, self.connection)
 
     def disconnect(self):
         self.connection.close()
