@@ -2,8 +2,9 @@
 import SocketServer
 import json
 import datetime
+import re
 
-#Change to increase or decrease max num of messages in history
+# Change to increase or decrease max num of messages in history
 HISTORY_CAP = 10
 
 clients = []
@@ -112,35 +113,44 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         return listofnames
 
     def login(self, username):
-        validRegex = '\W'
-        re.compiler
-        if username not in usersonline:
-            login = {
-                'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'sender': 'server',
-                'response': 'info',
-                'message': username + 'just logged in, welcome him!'
-            }
-            self.broadcast(login)  # Send Login message to all users
-            clients.append(self)
-            usersonline.append(username)
-            reply = {
-                'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'sender': 'server',
-                'response': 'info',
-                'username': username
-            }
-            self.send_history()
+        invaldregex = re.compile('\W')
+        if invaldregex.match(username):
+            if username not in usersonline:
+                login = {
+                    'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'sender': 'server',
+                    'response': 'info',
+                    'message': username + 'just logged in, welcome him!'
+                }
+                self.broadcast(login)  # Send Login message to all users
+                clients.append(self)
+                usersonline.append(username)
+                reply = {
+                    'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'sender': 'server',
+                    'response': 'info',
+                    'username': username
+                }
+                self.send_history()
+            else:
+                reply = {
+                    'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'sender': 'server',
+                    'response': 'error',
+                    'error': 'Name already taken!',
+                    'username': username
+                }
+            self.send(reply)
+            return username
         else:
             reply = {
                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 'sender': 'server',
                 'response': 'error',
-                'error': 'Name already taken!',
+                'error': 'Invalid username',
                 'username': username
             }
-        self.send(reply)
-        return username
+            self.send(reply)
 
     def send(self, json_data):
         self.connection.sendall(json_data)
@@ -169,7 +179,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         self.send(reply)
 
     def send_history(self):
-        #caping history
+        # caping history
         while len(history) > HISTORY_CAP:
             history.pop(0)
         for reply in history:

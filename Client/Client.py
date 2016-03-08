@@ -4,9 +4,8 @@ import json
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
 
+
 class Client:
-
-
     """
     This is the chat client class
     """
@@ -18,7 +17,7 @@ class Client:
 
         # Set up the socket connection to the server
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
+
         # TODO: Finish init process with necessary code
         self.host = host
         self.server_port = server_port
@@ -27,16 +26,14 @@ class Client:
     def run(self):
         # Initiate the connection to the server
         self.connection.connect((self.host, self.server_port))
-        self.receive_message(self.connection.recv(4096))
+        MessageReceiver(self.host, self.server_port)
 
-        
     def disconnect(self):
         self.connection.close()
         pass
 
     def receive_message(self, message):
-
-        # TODO: Handle incoming message
+        print MessageParser.parse(message)
         pass
 
     def send_payload(self, data):
@@ -55,8 +52,8 @@ class Client:
             print "No valid input try again:\n"
 
     def json_Encoder(self, request, content):
-       self.send_payload(json.dump({'request': request,'content': content}))
-    # More methods may be needed!
+        self.send_payload(json.dump({'request': request, 'content': content}))
+        # More methods may be needed!
 
 
 if __name__ == '__main__':
