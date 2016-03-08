@@ -21,6 +21,10 @@ class Client:
         # TODO: Finish init process with necessary code
         self.host = host
         self.server_port = server_port
+        
+        messageReceiver = MessageReceiver(self,self.connection)
+        messageReceiver.run()
+        
         self.run()
 
     def run(self):
