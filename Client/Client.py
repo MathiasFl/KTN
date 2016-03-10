@@ -48,7 +48,7 @@ class Client:
     def getUserInput(self):
         userInput = str(raw_input('>>>'))
         if userInput.lower() == "help" or userInput.lower() == "names" or userInput.lower() == "logout":
-            self.json_Encoder(userInput.lower(), "None")
+            self.json_Encoder(userInput.lower(), None)
         elif userInput[:5].lower() == "login":
             self.json_Encoder(userInput[:5], userInput[6:])
         elif userInput[:3].lower() == "msg":
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     No alterations are necessary
     """
 
-    client = Client('10.20.86.75', 9998)
+    client = Client('10.20.53.144', 30000)
     #client = Client('78.91.80.197', 9998)
     while True:
         client.getUserInput()

@@ -69,7 +69,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                             'response': 'message',
                             'content': json_data.get('content')
                         }
-                        history.append(reply)
+                        history.append(json.dumps(reply))
                         self.broadcast(reply)
                     else:
                         reply = {
@@ -117,7 +117,8 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 
     def login(self, username):
         invaldregex = re.compile('\W')
-        if not invaldregex.match(str(username)):
+        username = username.encode("utf-8")
+        if not invaldregex.match(username):
             if username not in usersonline and len(username) >= 2:
                 login = {
                     'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
@@ -149,7 +150,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                 'sender': 'Server',
                 'response': 'error',
-                'content': 'Invalid username ' + username
+                'content': 'Invalid username: ' + username
             }
             self.send(reply)
 
@@ -211,7 +212,7 @@ if __name__ == "__main__":
 
     No alterations are necessary
     """
-    HOST, PORT = '10.20.86.75', 9998
+    HOST, PORT = '10.20.86.75', 30000
     print 'Server running...'
 
     # Set up and initiate the TCP server

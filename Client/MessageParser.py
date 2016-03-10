@@ -43,6 +43,5 @@ class MessageParser():
         tempArray = payload.get('content')
         tempString = ''
         for replies in tempArray:
-            tempString += self.parse_message(replies)
-            tempString += '>>>'
+            tempString += self.parse_message(json.loads(replies))
         return tempString
