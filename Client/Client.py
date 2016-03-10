@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import socket
 import json
 import thread
@@ -66,6 +68,8 @@ if __name__ == '__main__':
 
     No alterations are necessary
     """
-    client = Client('localhost', 9998)
+
+    client = Client('10.20.86.75', 9998)
+    #client = Client('78.91.80.197', 9998)
     while True:
         client.getUserInput()

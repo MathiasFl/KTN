@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import SocketServer
 import json
 import datetime
@@ -51,10 +53,10 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 if json_data.get('request') == 'login':
                     if logged_inn:
                         reply = {
-                            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                             'sender': 'server',
                             'response': 'error',
-                            'error': 'Logout before trying to login with a new name'
+                            'content': 'Logout before trying to login with a new name'
                         }
                         self.send(reply)
                     else:
@@ -62,36 +64,36 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 elif json_data.get('request') == 'msg':
                     if logged_inn:
                         reply = {
-                            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                             'sender': client_name,
                             'response': 'message',
-                            'message': json_data.get('content')
+                            'content': json_data.get('content')
                         }
                         history.append(reply)
                         self.broadcast(reply)
                     else:
                         reply = {
-                            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                             'sender': 'Server',
                             'response': 'error',
-                            'error': 'You must be logged inn to send messages'
+                            'content': 'You must be logged inn to send messages'
                         }
                         self.send(reply)
                 elif json_data.get('request') == 'names':
                     if logged_inn:
                         reply = {
-                            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                             'sender': 'server',
                             'response': 'info',
-                            'info': self.get_names()
+                            'content': self.get_names()
                         }
                         self.send(reply)
                     else:
                         reply = {
-                            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                             'sender': 'Server',
                             'response': 'error',
-                            'error': 'You must be logged inn to view online users'
+                            'content': 'You must be logged inn to view online users'
                         }
                         self.send(reply)
 
@@ -99,10 +101,10 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                     self.logout(client_name)
                 elif json_data.get('request') == 'help':
                     reply = {
-                        'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                         'sender': 'Server',
                         'response': 'info',
-                        'info': helpMenu
+                        'content': helpMenu
                     }
                     self.send(reply)
 
@@ -118,36 +120,36 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         if not invaldregex.match(str(username)):
             if username not in usersonline and len(username) >= 2:
                 login = {
-                    'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                     'sender': 'Server',
                     'response': 'info',
-                    'info': username + ' just logged in, welcome him!'
+                    'content': username + ' just logged in, welcome him!'
                 }
                 self.broadcast(login)  # Send Login message to all users
                 clients.append(self)
                 usersonline.append(username)
                 reply = {
-                    'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                     'sender': 'Server',
                     'response': 'info',
-                    'info': 'You just logged inn with ' + username
+                    'content': 'You just logged inn with ' + username
                 }
                 self.send_history()
             else:
                 reply = {
-                    'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                     'sender': 'Server',
                     'response': 'error',
-                    'error': username + ' is already taken!',
+                    'content': username + ' is already taken!',
                 }
             self.send(reply)
             return username
         else:
             reply = {
-                'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                 'sender': 'Server',
                 'response': 'error',
-                'error': 'Invalid username ' + username
+                'content': 'Invalid username ' + username
             }
             self.send(reply)
 
@@ -163,19 +165,19 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     def logout(self, username):
         if username in usersonline:
             reply = {
-                'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                 'sender': 'Server',
                 'response': 'info',
-                'info': 'You are now logged out, come back again soon'
+                'content': 'You are now logged out, come back again soon'
             }
             clients.remove(self)
             usersonline.remove(username)
         else:
             reply = {
-                'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
                 'sender': 'Server',
                 'response': 'error',
-                'error': 'Not logged inn'
+                'content': 'Not logged inn'
             }
         self.send(reply)
 
@@ -184,10 +186,10 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         while len(history) > HISTORY_CAP:
             history.pop(0)
         reply = {
-            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'timestamp': datetime.datetime.now().strftime("%H:%M:%S"),
             'sender': 'Server',
             'response': 'history',
-            'history': history
+            'content': history
         }
         self.send(reply)
 
@@ -209,7 +211,7 @@ if __name__ == "__main__":
 
     No alterations are necessary
     """
-    HOST, PORT = 'localhost', 9998
+    HOST, PORT = '10.20.86.75', 9998
     print 'Server running...'
 
     # Set up and initiate the TCP server

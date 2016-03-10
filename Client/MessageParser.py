@@ -23,12 +23,12 @@ class MessageParser():
     def parse_error(self, payload):
         tempString = payload.get('timestamp') + ' \n\t'
         tempString += payload.get('response') + ': \t'
-        tempString += payload.get('error') + '\n'
+        tempString += payload.get('content') + '\n'
         return tempString
 
     def parse_info(self, payload):
         tempString = payload.get('timestamp') + ' '
-        tempString += payload.get('info') + '\n'
+        tempString += payload.get('content') + '\n'
         return tempString
 
     # Include more methods for handling the different responses...
@@ -36,11 +36,11 @@ class MessageParser():
     def parse_message(self, payload):
         tempString = payload.get('timestamp') + ' '
         tempString += payload.get('sender') + ': \t'
-        tempString += payload.get('message') + '\n'
+        tempString += payload.get('content') + '\n'
         return tempString
 
     def parse_history(self, payload):
-        tempArray = payload.get('history')
+        tempArray = payload.get('content')
         tempString = ''
         for replies in tempArray:
             tempString += self.parse_message(replies)
